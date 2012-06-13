@@ -256,14 +256,28 @@ class Base(Page):
 
         def click_my_favorites(self):
             item_locator = (By.CSS_SELECTOR, " li:nth-child(4) a")
-            hover_element = self.selenium.find_element(*self._account_controller_locator)
-            click_element = self.selenium.find_element(*self._account_dropdown_locator).find_element(*item_locator)
+            # hover_element = self.selenium.find_element(*self._account_controller_locator)
+            # click_element = self.selenium.find_element(*self._account_dropdown_locator).find_element(*item_locator)
 
             # this method is flakey, it sometimes does not actually click
-            ActionChains(self.selenium).move_to_element(hover_element).\
-                move_by_offset( -10, 0 ).\
-                move_to_element(click_element).\
-                click().perform()
+            ActionChains(self.selenium).move_to_element(
+                self.selenium.find_element(*self._account_controller_locator)
+            ).perform()
+            WebDriverWait(self.selenium, self.timeout).until(lambda s: 
+                s.find_element(*self._account_dropdown_locator).is_displayed)
+            ActionChains(self.selenium).move_to_element(
+                self.selenium.find_element(*self._account_controller_locator)
+            ).move_by_offset(
+                -20, 0
+            ).move_to_element(
+                self.selenium.find_element(
+                    *self._account_dropdown_locator
+                )
+            ).click(
+                self.selenium.find_element(
+                    *self._account_dropdown_locator
+                ).find_element(*item_locator)
+            ).perform()
             
             from pages.desktop.user import MyFavorites
             return MyFavorites(self.testsetup)
