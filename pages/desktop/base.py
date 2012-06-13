@@ -259,6 +259,7 @@ class Base(Page):
             hover_element = self.selenium.find_element(*self._account_controller_locator)
             click_element = self.selenium.find_element(*self._account_dropdown_locator).find_element(*item_locator)
             ActionChains(self.selenium).move_to_element(hover_element).\
+                move_by_offset( -10, 0 ).\
                 move_to_element(click_element).\
                 click().perform()
 
