@@ -8,7 +8,6 @@ import re
 
 from datetime import datetime
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 
 from pages.page import Page
@@ -160,17 +159,21 @@ class Base(Page):
             return [HeaderMenu(self.testsetup, web_element) for web_element in self.selenium.find_elements(*self._site_navigation_menus_locator)]
 
         def click_other_application(self, other_app):
-            hover_locator = self.selenium.find_element(*self._other_applications_locator)
             app_locator = self.selenium.find_element(By.CSS_SELECTOR,
                                                      "#app-%s > a" % other_app.lower())
-            ActionChains(self.selenium).move_to_element(hover_locator).\
-                move_to_element(app_locator).\
-                click().perform()
+            self.navigate_hover_menu(
+                self._other_applications_locator,
+                self._other_applications_menu_locator,
+                app_locator
+            )
 
         def is_other_application_visible(self, other_app):
-            hover_locator = self.selenium.find_element(*self._other_applications_locator)
-            app_locator = (By.CSS_SELECTOR, "#app-%s" % other_app.lower())
-            ActionChains(self.selenium).move_to_element(hover_locator).perform()
+            app_locator = (By.CSS_SELECTOR, "#app-%s > a" % other_app.lower())
+            self.hover_menu_options_text(
+                self._other_applications_locator,
+                self._other_applications_menu_locator
+            )
+    
             return self.is_element_visible(*app_locator)
 
         def search_for(self, search_term):
@@ -223,74 +226,55 @@ class Base(Page):
 
         def click_edit_profile(self):
             item_locator = (By.CSS_SELECTOR, " li:nth-child(2) a")
-            hover_element = self.selenium.find_element(*self._account_controller_locator)
-            click_element = self.selenium.find_element(*self._account_dropdown_locator).find_element(*item_locator)
-            ActionChains(self.selenium).move_to_element(hover_element).\
-                move_to_element(click_element).\
-                click().perform()
+            self.navigate_hover_menu(
+                self._account_controller_locator,
+                self._account_dropdown_locator,
+                item_locator
+            )
 
             from pages.desktop.user import EditProfile
             return EditProfile(self.testsetup)
 
         def click_view_profile(self):
             item_locator = (By.CSS_SELECTOR, " li:nth-child(1) a")
-            hover_element = self.selenium.find_element(*self._account_controller_locator)
-            click_element = self.selenium.find_element(*self._account_dropdown_locator).find_element(*item_locator)
-            ActionChains(self.selenium).move_to_element(hover_element).\
-                move_to_element(click_element).\
-                click().perform()
+            self.navigate_hover_menu(
+                self._account_controller_locator,
+                self._account_dropdown_locator,
+                item_locator
+            )
 
             from pages.desktop.user import ViewProfile
             return ViewProfile(self.testsetup)
 
         def click_my_collections(self):
             item_locator = (By.CSS_SELECTOR, " li:nth-child(3) a")
-            hover_element = self.selenium.find_element(*self._account_controller_locator)
-            click_element = self.selenium.find_element(*self._account_dropdown_locator).find_element(*item_locator)
-            ActionChains(self.selenium).move_to_element(hover_element).\
-                move_to_element(click_element).\
-                click().perform()
+            self.navigate_hover_menu(
+                self._account_controller_locator,
+                self._account_dropdown_locator,
+                item_locator
+            )
 
             from pages.desktop.user import MyCollections
             return MyCollections(self.testsetup)
 
         def click_my_favorites(self):
             item_locator = (By.CSS_SELECTOR, " li:nth-child(4) a")
-            # hover_element = self.selenium.find_element(*self._account_controller_locator)
-            # click_element = self.selenium.find_element(*self._account_dropdown_locator).find_element(*item_locator)
-
-            # this method is flakey, it sometimes does not actually click
-            ActionChains(self.selenium).move_to_element(
-                self.selenium.find_element(*self._account_controller_locator)
-            ).perform()
-            WebDriverWait(self.selenium, self.timeout).until(lambda s: 
-                s.find_element(*self._account_dropdown_locator).is_displayed)
-            ActionChains(self.selenium).move_to_element(
-                self.selenium.find_element(*self._account_controller_locator)
-            ).move_by_offset(
-                -20, 0
-            ).move_to_element(
-                self.selenium.find_element(
-                    *self._account_dropdown_locator
-                )
-            ).click(
-                self.selenium.find_element(
-                    *self._account_dropdown_locator
-                ).find_element(*item_locator)
-            ).perform()
             
+            self.navigate_hover_menu(
+                self._account_controller_locator,
+                self._account_dropdown_locator,
+                item_locator
+            )
             from pages.desktop.user import MyFavorites
             return MyFavorites(self.testsetup)
 
         @property
         def is_my_favorites_menu_present(self):
-            hover_element = self.selenium.find_element(*self._account_controller_locator)
 
-            ActionChains(self.selenium).move_to_element(hover_element).perform()
-            menu_text = self.selenium.find_element(*self._account_dropdown_locator).text
-
-            if not 'My Profile' in menu_text:
-                print "ActionChains is being flakey again"
+            menu_text = self.hover_menu_options_text(
+                self._account_controller_locator,
+                self._account_dropdown_locator
+            )
             return 'My Favorites' in menu_text
 
         @property
@@ -302,10 +286,10 @@ class Base(Page):
             return self.selenium.find_element(*self._other_applications_locator).text
 
         def hover_over_other_apps_menu(self):
-            hover_element = self.selenium.find_element(*self._other_applications_locator)
-            ActionChains(self.selenium).\
-                move_to_element(hover_element).\
-                perform()
+            self.hover_menu_options_text(
+                self._other_applications_locator,
+                self._other_applications_menu_locator
+            )
 
         @property
         def is_other_apps_dropdown_menu_visible(self):

@@ -9,6 +9,7 @@ Created on Jun 21, 2010
 '''
 from unittestzero import Assert
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementNotVisibleException
 
@@ -63,3 +64,65 @@ class Page(object):
 
     def return_to_previous_page(self):
         self.selenium.back()
+
+    def navigate_hover_menu(self, hover_locator, menu_locator, menu_item_locator):
+        """Hover over a menu and click a menu item. 
+
+        Positional arguements:
+        hover_locator -- WebDriver compliant tuple
+        menu_locator  -- WebDriver compliant tuple
+        menu_item_locator -- WebDriver compliant tuple
+
+        Returns nothing
+
+        Throws:
+        TimeoutException with message about which locator was not found
+        """
+        WebDriverWait(self.selenium, 20).until(lambda s: 
+            s.find_element(*hover_locator).is_displayed,
+            "hover locator not displayed")
+        ActionChains(self.selenium).move_to_element(
+            self.selenium.find_element(*hover_locator)
+        ).perform()
+        WebDriverWait(self.selenium, 20).until(lambda s: 
+            s.find_element(*menu_locator).is_displayed,
+            "menu locator is not displayed")
+        ActionChains(self.selenium).move_to_element(
+            self.selenium.find_element(*hover_locator)
+        ).move_by_offset(
+            -20, 0
+        ).move_to_element(
+            self.selenium.find_element(
+                *menu_locator
+            )
+        ).click(
+            self.selenium.find_element(
+                *menu_locator
+            ).find_element(*menu_item_locator)
+        ).perform()
+
+    def hover_menu_options_text(self, hover_locator, menu_locator):
+        """Hover over menu and return text of menu options.
+
+        Positional arguements:
+        hover_locator -- WebDriver compliant tuple
+        menu_locator  -- WebDriver compliant tuple
+
+        Returns:
+        string containing text of menu
+
+        Throws:
+        TimeoutException with message about which locator was not found
+
+        Other uses:
+        Use this method to hover over menu before performing some other check.
+        """
+        WebDriverWait(self.selenium, 20).until(lambda s: 
+            s.find_element(*hover_locator).is_displayed,
+            "hover locator not displayed")
+        ActionChains(self.selenium).move_to_element(
+            self.selenium.find_element(*hover_locator)
+        ).perform()
+        WebDriverWait(self.selenium, 20).until(lambda s: 
+            s.find_element(*menu_locator).is_displayed)
+        return self.selenium.find_element(*menu_locator).text
