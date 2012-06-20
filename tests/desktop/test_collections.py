@@ -15,7 +15,6 @@ from pages.desktop.details import Details
 
 class TestCollections:
 
-    @pytest.mark.native
     @pytest.mark.nondestructive
     def test_featured_tab_is_highlighted_by_default(self, mozwebqa):
         """
