@@ -73,7 +73,6 @@ class Themes(Base):
     def addon_names(self):
         addon_name = []
         for addon in self._addons_root_element.find_elements(*self._addon_name_locator):
-            ActionChains(self.selenium).move_to_element(addon).perform()
             addon_name.append(addon.text)
         return addon_name
 
