@@ -13,6 +13,7 @@ from pages.desktop.home import Home
 
 class TestThemes:
 
+    @pytest.mark.native
     @pytest.mark.nondestructive
     def test_that_themes_can_be_sorted_by_name(self, mozwebqa):
         """Test for Litmus 11727 and 4839."""
@@ -33,6 +34,7 @@ class TestThemes:
         addons.sort()
         [Assert.equal(addons_orig[i], addons[i]) for i in xrange(len(addons))]
 
+    @pytest.mark.native
     @pytest.mark.nondestructive
     def test_that_themes_can_be_sorted_by_updated_date(self, mozwebqa):
         """Test for Litmus 11638."""
@@ -63,6 +65,7 @@ class TestThemes:
         created_dates.extend(themes_page.addon_created_dates)
         Assert.is_sorted_descending(created_dates)
 
+    @pytest.mark.native
     @pytest.mark.nondestructive
     def test_that_themes_can_be_sorted_by_popularity(self, mozwebqa):
         """Test for Litmus 11638."""
