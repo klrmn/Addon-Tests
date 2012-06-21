@@ -15,6 +15,7 @@ from pages.desktop.details import Details
 
 class TestCollections:
 
+    @pytest.mark.native
     @pytest.mark.nondestructive
     def test_featured_tab_is_highlighted_by_default(self, mozwebqa):
         """
@@ -26,6 +27,7 @@ class TestCollections:
         Assert.equal(featured_collections_page.default_selected_tab, "Featured")
 
     @pytest.mark.login
+    @pytest.mark.native
     @pytest.mark.xfail(reason = "Bug 751909 - Collection name not appearing after creating collection")
     def test_create_collection(self, mozwebqa):
 
